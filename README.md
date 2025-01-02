@@ -48,3 +48,36 @@ Microsoft.EntityFrameworkCore.SqlServer
 - [ ] Creating pages at another project inside this solution (Another .NET Core Project in this solution)
    
 
+## Sample MSSQL Query Script For This Project 
+   ```sh
+   -- Create Customers table
+CREATE TABLE Customers (
+    CustomerID INT IDENTITY(1,1) PRIMARY KEY,
+    FirstName NVARCHAR(50),
+    LastName NVARCHAR(50),
+    Email NVARCHAR(100)
+);
+
+-- Insert sample data into Customers table
+INSERT INTO Customers (FirstName, LastName, Email) VALUES
+('John', 'Doe', 'john.doe@example.com'),
+('Jane', 'Smith', 'jane.smith@example.com'),
+('Michael', 'Brown', 'michael.brown@example.com'),
+('Emily', 'Davis', 'emily.davis@example.com');
+
+-- Create Products table
+CREATE TABLE Products (
+    ProductID INT IDENTITY(1,1) PRIMARY KEY,
+    ProductName NVARCHAR(100),
+    Price DECIMAL(10, 2),
+    Stock INT
+);
+
+-- Insert sample data into Products table
+INSERT INTO Products (ProductName, Price, Stock) VALUES
+('Laptop', 799.99, 10),
+('Smartphone', 499.99, 20),
+('Headphones', 29.99, 50),
+('Tablet', 299.99, 15);
+
+   ```
