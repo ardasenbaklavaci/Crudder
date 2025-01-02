@@ -45,7 +45,7 @@ Microsoft.EntityFrameworkCore.SqlServer
 - [x] Creating Models of each table using Entity Framework Core Scaffolding
 - [ ] Creating Index,Add,Details and Delete (CRUD) Pages for each model...
 - [ ] Creating Codebehind .cshtml for each model's CRUD Pages
-- [ ] Creating pages at another project inside this solution (Another .NET Core Project in this solution)
+- [x] Creating pages at another project inside this solution (Another .NET Core Project in this solution)
    
 
 ## Sample MSSQL Query Script For This Project 

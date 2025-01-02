@@ -25,7 +25,7 @@ public class RazorPageGenerator
     public void GenerateCrudPages(List<string> tableNames, string outputDirectory)
     {
         string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-        string solutionDirectory = Path.GetFullPath(Path.Combine(baseDirectory, @"..\..\..\..\"));  // Adjust based on your solution structure
+        string solutionDirectory = Path.GetFullPath(Path.Combine(baseDirectory, @"..\..\..\"));  // Adjust based on your solution structure
 
         foreach (var tableName in tableNames)
         {
@@ -112,8 +112,16 @@ namespace Data
         Directory.CreateDirectory(dataDirectory);
         File.WriteAllText(Path.Combine(dataDirectory, "NewDbContext.cs"), dbContextContent);
 
-        UpdateAppSettings(solutionDirectory);
+
+
+        String bdir = AppDomain.CurrentDomain.BaseDirectory;
+        string dire = Path.GetFullPath(Path.Combine(baseDirectory, @"..\..\..\..\"));
+
+        string targetDirectory = Path.Combine(dire, "CoreProject");
+
+        UpdateAppSettings(targetDirectory);
     }
+    
 
     private string GenerateModelClass(string tableName)
     {
@@ -153,7 +161,6 @@ namespace Models
     }}
 }}";
     }
-
 
     private List<(string ColumnName, string DataType)> GetTableSchema(string tableName)
     {
@@ -219,30 +226,47 @@ namespace Models
         }
     }
 
-
     private void UpdateAppSettings(string solutionDirectory)
     {
-        var appSettingsPath = Path.Combine(solutionDirectory, "appsettings.json");
-        JObject appSettings;
+        var TargetAppSettingsPath = Path.Combine(solutionDirectory, "appsettings.json");
+        JObject TargetAppSettings;
 
-        if (File.Exists(appSettingsPath))
+        string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+        JObject ResourceAppSettings;
+
+        String bdir = AppDomain.CurrentDomain.BaseDirectory;
+        string dire = Path.GetFullPath(Path.Combine(baseDirectory, @"..\..\..\..\"));
+
+        var ResourcePath = Path.Combine(dire, "Crudder");
+        var ResourceAppSettingsPath = Path.Combine(ResourcePath, "appsettings.json");
+
+        if (File.Exists(TargetAppSettingsPath))
         {
-            var json = File.ReadAllText(appSettingsPath);
-            appSettings = JObject.Parse(json);
+            var targetJson = File.ReadAllText(TargetAppSettingsPath);
+            TargetAppSettings = JObject.Parse(targetJson);
+
+            if (File.Exists(ResourceAppSettingsPath))
+            {
+                var json = File.ReadAllText(ResourceAppSettingsPath);
+                ResourceAppSettings = JObject.Parse(json);
+            }
+
         }
         else
         {
-            appSettings = new JObject();
+            ResourceAppSettings = new JObject();
+            TargetAppSettings = new JObject();
         }
 
-        if (appSettings["ConnectionStrings"] == null)
+        if (TargetAppSettings["ConnectionStrings"] == null)
         {
-            appSettings["ConnectionStrings"] = new JObject();
+            TargetAppSettings["ConnectionStrings"] = new JObject();
         }
 
-        appSettings["ConnectionStrings"]["DefaultConnection"] = _connectionString;
+        TargetAppSettings["ConnectionStrings"]["DefaultConnection"] = _connectionString;
 
-        File.WriteAllText(appSettingsPath, appSettings.ToString());
+        File.WriteAllText(TargetAppSettingsPath, TargetAppSettings.ToString());
     }
 }
 
