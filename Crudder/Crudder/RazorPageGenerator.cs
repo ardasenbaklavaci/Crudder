@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 public class RazorPageGenerator
 {
@@ -34,6 +35,8 @@ public class RazorPageGenerator
             var pageDirectory = Path.Combine(outputDirectory, pageName);
 
             Directory.CreateDirectory(pageDirectory);
+
+            GenerateIndexPage(tableName, pageDirectory);
 
             // Generate Razor Page (HTML)
             var razorPageContent = $@"
@@ -112,6 +115,8 @@ namespace Data
         Directory.CreateDirectory(dataDirectory);
         File.WriteAllText(Path.Combine(dataDirectory, "NewDbContext.cs"), dbContextContent);
 
+        
+        
 
 
         String bdir = AppDomain.CurrentDomain.BaseDirectory;
@@ -121,8 +126,6 @@ namespace Data
 
         UpdateAppSettings(targetDirectory);
     }
-    
-
     private string GenerateModelClass(string tableName)
     {
         var properties = GetTableSchema(tableName);
@@ -161,7 +164,6 @@ namespace Models
     }}
 }}";
     }
-
     private List<(string ColumnName, string DataType)> GetTableSchema(string tableName)
     {
         var columns = new List<(string ColumnName, string DataType)>();
@@ -190,7 +192,6 @@ namespace Models
 
         return columns;
     }
-
     private string MapSqlToCSharpType(string sqlDataType)
     {
         return sqlDataType switch
@@ -209,7 +210,6 @@ namespace Models
             _ => "object"
         };
     }
-
     private string GetPrimaryKeyColumn(string tableName)
     {
         using (var connection = new SqlConnection(_connectionString))
@@ -225,7 +225,6 @@ namespace Models
             }
         }
     }
-
     private void UpdateAppSettings(string solutionDirectory)
     {
         var TargetAppSettingsPath = Path.Combine(solutionDirectory, "appsettings.json");
@@ -268,5 +267,100 @@ namespace Models
 
         File.WriteAllText(TargetAppSettingsPath, TargetAppSettings.ToString());
     }
+
+    public void GenerateIndexPage(string tableName, string outputDirectory)
+    {
+        var pageName = tableName;
+        var modelName = $"{pageName}IndexModel";
+        //var pageDirectory = Path.Combine(outputDirectory, pageName);
+        var pageDirectory = outputDirectory;
+
+        // Ensure directory exists
+        Directory.CreateDirectory(pageDirectory);
+
+        // Generate Razor Index Page (HTML)
+        var razorPageContent = $@"
+@page
+@model {modelName}
+
+<h2>{pageName} List</h2>
+
+<table class=""table"">
+    <thead>
+        <tr>
+            @foreach (var column in Model.Columns)
+            {{
+    
+                    <th> @column </th>
+    
+                }}
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.
+        {pageName})
+        
+        {{
+
+
+                <tr>
+                    @foreach(var column in Model.Columns)
+                {{
+                    <td>@item.GetType().GetProperty(column)?.GetValue(item, null)</td>
+                }}
+                <td>
+                    <a asp-page=""Edit"" asp-route-id="""" class=""btn btn-primary"">Edit</a>
+                    <a asp-page=""Details"" asp-route-id="""" class=""btn btn-info"">Details</a>
+                    <a asp-page=""Delete"" asp-route-id="""" class=""btn btn-danger"">Delete</a>
+                </td>
+            </tr>
+        }}
+    </tbody>
+</table>
+
+<a asp-page=""Create"" class=""btn btn-success"">Create New</a>
+";
+
+        File.WriteAllText(Path.Combine(pageDirectory, $"{pageName}Index.cshtml"), razorPageContent);
+
+        // Generate Page Model (C#)
+        var pageModelContent = $@"
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Models;
+using Data;
+
+public class {modelName} : PageModel
+{{
+    private readonly NewDbContext _context;
+
+    public {modelName}(NewDbContext context)
+    {{
+        _context = context;
+    }}
+
+    public List<{pageName}> {pageName} {{ get; set; }}
+    public List<string> Columns {{ get; set; }}
+
+    public async Task OnGetAsync()
+    {{
+        {pageName} = await _context.{pageName}.ToListAsync();
+        Columns = new List<string>();
+
+        foreach (var prop in typeof({pageName}).GetProperties())
+        {{
+            Columns.Add(prop.Name);
+        }}
+    }}
+}}";
+
+        File.WriteAllText(Path.Combine(pageDirectory, $"{pageName}IndexModel.cs"), pageModelContent);
+    }
+
+
+
 }
 
