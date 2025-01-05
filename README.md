@@ -4,6 +4,19 @@
 **Description:**
 CrudderWithHtml, creates CRUD Operations with HTML and CSHTML (codebehind) Files for your specified MSSQL Database... 
 
+This program is a Razor Pages CRUD Generator, designed to streamline the creation of CRUD (Create, Read, Update, Delete) operations in ASP.NET Core Razor Pages applications. Unlike traditional MVC scaffolding tools, this generator is tailored specifically for Razor Pages, which use a PageModel-first approach rather than Controllers and Views.
+
+**How It Differs from MVC Code Generators**
+- Focus on Razor Pages: Generates Razor Pages (.cshtml and .cshtml.cs) with a modular, page-based structure.
+- No Controllers: Razor Pages eliminate the need for Controllers, simplifying routing and logic handling.
+- Dynamic Model Creation: Automatically generates C# model classes and database context (DbContext) from table schemas.
+- File-Based Routing: Razor Pages use file paths for routing, avoiding explicit route configurations.
+- Simple and Modular: Each Razor Page encapsulates its UI and logic, making the codebase cleaner and more maintainable for smaller projects.
+- Lightweight Design: Ideal for projects where the complexity of MVC is unnecessary, focusing on simplicity and developer productivity.
+- This generator is perfect for developers who prefer the simplicity and minimalism of Razor Pages while maintaining powerful, data-driven features.
+- Gives user a ready project to run... 
+
+
 **Features:**
 - Creating Entity Models, Page Directories for each table, within name of each table... For implementing CRUD Operations, and setting a base implementation for a project scaffolded from any database... 
 
